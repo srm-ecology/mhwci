@@ -12,7 +12,7 @@
 #' 
 #' @param x values to find the cut-off in, numeric vector
 #' @param cut_percent numeric  top percent to cut e.g. 1 to cut top 1% See description should be 0<x<100 and can be decimal
-#' @returns numeric value in x that is the max befoe the percentile indicated by cut_percent
+#' @return numeric value in x that is the max befoe the percentile indicated by cut_percent
 #' @export 
 percentile_cutoff_value<- function(x, cut_percent = 1){
   
@@ -57,7 +57,7 @@ percentile_cutoff_value<- function(x, cut_percent = 1){
 #'    https://grass.osgeo.org/grass83/manuals/r.colors.html (but get the name
 #'    from the tidyterra reference)
 #'
-#' @returns ggplot object, one map for each item in raster_list with single legend 
+#' @return ggplot object, one map for each item in raster_list with single legend 
 #' @export
 plot_rasters_squish_outliers <- function(raster_list, 
                                          title = "", 
