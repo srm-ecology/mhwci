@@ -66,7 +66,11 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://billspat.github.io/mhw/" class="external-link">mhwci</a></span><span class="op">)</span></span></code></pre></div>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://billspat.github.io/mhw/" class="external-link">mhwci</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="va"><a href="https://r.duckdb.org/" class="external-link">duckdb</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Loading required package: duckdb</span></span>
+<span><span class="co">#&gt; Loading required package: DBI</span></span></code></pre></div>
 <p>This shows some basic commands to connect to the MHW-CI database,
 summarize data and plot.</p>
 <p>If you are developing this package, editing scripts or adding
@@ -93,7 +97,7 @@ function:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">db</span><span class="op">&lt;-</span> <span class="fu">mhwci</span><span class="fu">::</span><span class="fu"><a href="../reference/mhw_connect.html">mhw_connect</a></span><span class="op">(</span><span class="va">db_file</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;duckdb_connection 11300 driver=&lt;duckdb_driver dbdir='/Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v3.db' read_only=FALSE bigint=numeric&gt;&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;duckdb_connection 3d4a0 driver=&lt;duckdb_driver dbdir='/Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v3.db' read_only=FALSE bigint=numeric&gt;&gt;</span></span></code></pre></div>
 <p>This isn’t actually the database, just a connection to it required
 for all database functions.</p>
 <p>Now you could list the tables in the database:</p>
@@ -166,33 +170,68 @@ prime meridian instead of the dateline.</p>
 <span><span class="co">#&gt; min values  :   5.0000,   5.0000,    5.00 </span></span>
 <span><span class="co">#&gt; max values  : 352.6837, 760.3404, 3040.25</span></span></code></pre></div>
 <p>Plot this list of rasters, setting the name of the metric (average
-duration) and the threshold of 1/2 year</p>
+duration) and the threshold of 1/2 year. Set the title to “” to not have
+a title.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, title <span class="op">=</span> <span class="va">mhw_table</span>, </span>
+<span>                             subtitle <span class="op">=</span> <span class="st">"average duration"</span>,</span>
 <span>                             scale_label <span class="op">=</span> <span class="st">"Average Duration, d"</span>, </span>
 <span>                             <span class="op">)</span></span></code></pre></div>
 <p><img src="using_mhw_database_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
-</div>
-<div class="section level2">
-<h2 id="plot-duration-other-scenarios">Plot duration other scenarios<a class="anchor" aria-label="anchor" href="#plot-duration-other-scenarios"></a>
-</h2>
-<p>Combine the commands above to plot the other scenarios. Note we
-change the title manually. This re-uses the connection object
-<code>db</code> we created above. The <code>duration_rasters()</code>
-function calls the function to create and run the SQL on the
-database</p>
+<p>The reason there is no visible effect is because of the very long
+tail in the distribution.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raster_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/durations_by_decade_raster.html">durations_by_decade_raster</a></span><span class="op">(</span><span class="va">db</span>, mhw_table<span class="op">=</span> <span class="st">"arise15_decade_metrics"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, title <span class="op">=</span> <span class="st">"ARISE 1.5 Average Duration"</span>, </span>
-<span>                             scale_label <span class="op">=</span> <span class="st">"Mean Duration, d"</span>, </span>
-<span>                             threshold <span class="op">=</span> <span class="fl">365</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="co"># plot histogram of 3rd raster, 2060-</span></span>
+<span></span>
+<span><span class="va">avg_dur_2060_69</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">raster_list</span><span class="op">[[</span><span class="st">'2060'</span><span class="op">]</span><span class="op">]</span> <span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">avg_dur_2060_69</span><span class="op">)</span>, bins<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <p><img src="using_mhw_database_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">raster_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/durations_by_decade_raster.html">durations_by_decade_raster</a></span><span class="op">(</span><span class="va">db</span>, mhw_table<span class="op">=</span> <span class="st">"ssp245_decade_metrics"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, title <span class="op">=</span> <span class="st">"SSP2 4.5 Average Duration"</span>, </span>
-<span>                             scale_label <span class="op">=</span> <span class="st">"Mean Duration, d"</span>, </span>
-<span>                             threshold <span class="op">=</span> <span class="fl">365</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">g</span><span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html" class="external-link">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">raster_list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, bins<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
+<p><strong>Log Scale on X and Y</strong></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">g</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_log10</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_y_log10</a></span><span class="op">(</span><span class="op">)</span> </span>
+<span><span class="co">#&gt; Warning in ggplot2::scale_y_log10(): <span style="color: #00BB00;">log-10</span> transformation</span></span>
+<span><span class="co">#&gt; introduced infinite values.</span></span>
+<span><span class="co">#&gt; Warning: Removed 15 rows containing missing values or values outside the scale range</span></span>
+<span><span class="co">#&gt; (`geom_bar()`).</span></span></code></pre></div>
 <p><img src="using_mhw_database_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+</div>
+<div class="section level2">
+<h2 id="plot-duration-other-scenarios-set-threshold">Plot duration other scenarios, set threshold<a class="anchor" aria-label="anchor" href="#plot-duration-other-scenarios-set-threshold"></a>
+</h2>
+<p>Combine the commands above to plot the other scenarios. This re-uses
+the connection object <code>db</code> we created above. The
+<code><a href="../reference/durations_by_decade_raster.html">durations_by_decade_raster()</a></code> creates the SQL and run is
+against on the database</p>
+<p>For plotting you can change the titles but also sets the
+max_threshold_value to 1/2 year for this example. <strong>Note: * this
+parameter used to be just <code>threshold</code> but now there is
+<code>max_threshold_value</code> and <code>min_threshold_value</code>*
+</strong></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raster_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/durations_by_decade_raster.html">durations_by_decade_raster</a></span><span class="op">(</span><span class="va">db</span>, mhw_table<span class="op">=</span> <span class="st">"arise15_decade_metrics"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, title <span class="op">=</span> <span class="st">"ARISE 1.5 Average Duration"</span>, </span>
+<span>                             subtitle <span class="op">=</span> <span class="st">"Threshold 1/2 year"</span>,</span>
+<span>                             scale_label <span class="op">=</span> <span class="st">"Mean Duration, d"</span>, </span>
+<span>                             max_threshold_value <span class="op">=</span> <span class="fl">365</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="using_mhw_database_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p>For this function, by default, the color scale is continuous. If you
+send a <code>break_width</code> parameter it will make it discrete. and
+also set a different color palette. See the reference documentation for
+<code><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers()</a></code> function for details</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">raster_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/durations_by_decade_raster.html">durations_by_decade_raster</a></span><span class="op">(</span><span class="va">db</span>, mhw_table<span class="op">=</span> <span class="st">"ssp245_decade_metrics"</span><span class="op">)</span></span>
+<span><span class="va">grass_palette_name</span> <span class="op">&lt;-</span> <span class="st">"kelvin"</span></span>
+<span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, title <span class="op">=</span> <span class="st">"SSP2 4.5 Average Duration"</span>, </span>
+<span>                             subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"testing"</span>, <span class="va">grass_palette_name</span>, <span class="st">"colr palette"</span><span class="op">)</span>,</span>
+<span>                             scale_label <span class="op">=</span> <span class="st">"Mean Duration, d"</span>, </span>
+<span>                             max_threshold_value <span class="op">=</span> <span class="fl">1000</span>,</span>
+<span>                             break_width <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>                             palette_name <span class="op">=</span> <span class="va">grass_palette_name</span></span>
+<span>                             <span class="op">)</span></span></code></pre></div>
+<p><img src="using_mhw_database_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="plot-other-metrics-and-summaries">Plot other metrics and summaries<a class="anchor" aria-label="anchor" href="#plot-other-metrics-and-summaries"></a>
@@ -200,7 +239,7 @@ database</p>
 <p>There are functions to summary any of the metrics with various
 statistics (mean, median, min, max, mode, etc)</p>
 <p>Let’s take the average of the average intensity</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># set the table</span></span>
 <span><span class="va">mhw_table</span> <span class="op">&lt;-</span> <span class="st">"arise10_decade_metrics"</span></span>
 <span><span class="co"># select the metric or column in the table above</span></span>
@@ -216,7 +255,7 @@ statistics (mean, median, min, max, mode, etc)</p>
 <span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, </span>
 <span>                             title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">mhw_table</span>, <span class="va">mhw_metric</span>, <span class="va">sql_function</span><span class="op">)</span>, </span>
 <span>                             scale_label <span class="op">=</span> <span class="st">"avg intensity average, c"</span> <span class="op">)</span></span></code></pre></div>
-<p><img src="using_mhw_database_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
+<p><img src="using_mhw_database_files/figure-html/unnamed-chunk-14-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="filtering-ensembles">Filtering ensembles<a class="anchor" aria-label="anchor" href="#filtering-ensembles"></a>
@@ -226,7 +265,7 @@ the summaries. The format is a string with list of ensembles and leading
 zeros, like this <code>"006,007,008"</code> Ten has a leading zero to,
 or <code>"010"</code> This is not a vector but a string! (for now). See
 the code below</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">ensemble_list_string</span> <span class="op">=</span> <span class="st">"006,007,008"</span></span>
 <span></span>
@@ -239,7 +278,7 @@ the code below</p>
 <span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">raster_list</span>, </span>
 <span>                             title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">mhw_table</span>, <span class="va">mhw_metric</span>, <span class="va">sql_function</span>, <span class="st">" ensembles "</span>, <span class="va">ensemble_list_string</span><span class="op">)</span>, </span>
 <span>                             scale_label <span class="op">=</span> <span class="st">"avg intensity average, c"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="using_mhw_database_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="using_mhw_database_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 </div>
 <div class="section level2">
 <h2 id="using-sql-directly">Using SQL directly<a class="anchor" aria-label="anchor" href="#using-sql-directly"></a>
@@ -247,30 +286,30 @@ the code below</p>
 <p>You can run SQL command to get data using the duckdb database engine,
 which is very fast.</p>
 <p>This SQL averages duration for the specific table</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># this is a function that creates a string of SQL with the table we want to use</span></span>
-<span><span class="va">sql</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/avg_duration_by_decade_sql.html">avg_duration_by_decade_sql</a></span><span class="op">(</span><span class="va">mhw_table</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sql</span><span class="op">)</span></span>
+<span><span class="va">sql_text</span><span class="op">&lt;-</span> <span class="fu"><a href="../reference/avg_duration_by_decade_sql.html">avg_duration_by_decade_sql</a></span><span class="op">(</span><span class="va">mhw_table</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">sql_text</span> <span class="op">)</span></span>
 <span><span class="co">#&gt; SELECT lat, lon, decades.decade, avg(mhw_dur) as avg_dur </span></span>
 <span><span class="co">#&gt;   FROM arise10_decade_metrics, decades </span></span>
 <span><span class="co">#&gt; WHERE ((mhw_onset_date &gt;= decades.decade_start) AND (mhw_onset_date &lt;= decades.decade_end)) </span></span>
 <span><span class="co">#&gt; GROUP BY lat, lon, decades.decade</span></span></code></pre></div>
 <p>Here is how you run a query:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># run this SQL using the `dbGetQuery` command.  </span></span>
-<span><span class="va">duration_by_loc</span><span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">sql</span><span class="op">)</span></span>
+<span><span class="va">duration_by_loc</span><span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">sql_text</span><span class="op">)</span></span>
 <span><span class="co"># show the first few rows</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">duration_by_loc</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         lat    lon decade   avg_dur</span></span>
-<span><span class="co">#&gt; 1  72.09424 268.75   2050  39.52206</span></span>
-<span><span class="co">#&gt; 2  77.74869 268.75   2050 107.49533</span></span>
-<span><span class="co">#&gt; 3 -70.20942 270.00   2050  20.23714</span></span>
-<span><span class="co">#&gt; 4 -67.38220 270.00   2050  43.00000</span></span>
-<span><span class="co">#&gt; 5 -60.78534 270.00   2050  57.35106</span></span>
-<span><span class="co">#&gt; 6 -56.07330 270.00   2050  42.69811</span></span></code></pre></div>
+<span><span class="co">#&gt;          lat    lon decade   avg_dur</span></span>
+<span><span class="co">#&gt; 1  27.801048 268.75   2050  34.48000</span></span>
+<span><span class="co">#&gt; 2  86.230367 268.75   2050  83.06504</span></span>
+<span><span class="co">#&gt; 3 -43.821989 270.00   2050  36.46243</span></span>
+<span><span class="co">#&gt; 4 -11.780104 270.00   2050 108.82394</span></span>
+<span><span class="co">#&gt; 5  -8.952879 270.00   2050 122.76800</span></span>
+<span><span class="co">#&gt; 6  11.780105 270.00   2050  38.21574</span></span></code></pre></div>
 <p>Now close the connection used here, otherwise there may be errors
 (“could not set lock on file …”)</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
