@@ -4,17 +4,17 @@
 
 Authors:
 
--   Lala Kounta
+-   Dr. Lala Kounta
 -   Pat Bills
--   Phoebe Zarnetske
+-   Dr. Phoebe Zarnetske
 
 ## Overview
 
-[Package documentation](https://srm-ecology.github.io/mhwci/)
+[Package documentation](https://srm-ecology.github.io/mhwci/) ~ [source code on github](https://github.com/srm-ecology/mhwci)
 
 This is a **work in progress** and incomplete.  Any results or visualizations shown are **draft** form and not 
 to be considered the final results or any statements made by the the authors at this point.   
-Description of the purpose, data sources, model basis etc are forth coming. 
+Description of the purpose, data sources, model basis etc are forthcoming in a publication
 
 This 'package' is for internal use only until publication of the paper, and is a continuation of Dr. Lala Kounta's project https://github.com/srm-ecology/MHW_climateintervention
 
