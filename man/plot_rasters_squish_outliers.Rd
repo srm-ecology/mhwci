@@ -7,9 +7,13 @@
 plot_rasters_squish_outliers(
   raster_list,
   title = "",
+  subtitle = "",
   scale_label = "",
   cut_percent = 0,
-  threshold_value = NA
+  max_threshold_value = NA,
+  min_threshold_value = NA,
+  break_width = NA,
+  palette_name = "bgyr"
 )
 }
 \arguments{
@@ -22,7 +26,17 @@ plot_rasters_squish_outliers(
 \item{cut_percent}{numeric percentile cut-off, see percentile_cutoff_value function for descriptoin, but 1 
 will cut top 1 percent, 0.25 will cut to 0.25% off and display as top color (e.g. red)}
 
-\item{threshold_value}{numeric optional numeric cut off the range display.  if this is sent, then cut_percent is ignored}
+\item{max_threshold_value}{numeric optional numeric cut off the range display.  if this is sent, then cut_percent is ignored}
+
+\item{min_threshold_value}{numeric optional numeric cut off the bottom of the range.}
+
+\item{break_width}{numeric, default NA.  If this is set, then uses the non-continous bars and this is the width of those}
+
+\item{palette_name}{string this must be a valid palette from 
+https://dieghernan.github.io/tidyterra/reference/grass_db.html, 
+and you can preview the colors on 
+https://grass.osgeo.org/grass83/manuals/r.colors.html (but get the name
+from the tidyterra reference)}
 }
 \value{
 ggplot object, one map for each item in raster_list with single legend

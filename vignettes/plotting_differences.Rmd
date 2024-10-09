@@ -1,0 +1,68 @@
+---
+title: "Plotting differences of rasters"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Plotting differences of rasters}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(magrittr)
+library(mhwci)
+```
+
+```{r, echo=TRUE}
+# read from the environment
+db_file <- mhwci::get_dbfile()
+db<- mhwci::mhw_connect(db_file)
+mhw_table <-"arise10_decade_metrics"
+arise10_raster_list <- durations_by_decade_raster(db, mhw_table)
+plot_rasters_squish_outliers(arise10_raster_list, title = "", 
+                             subtitle = "",
+                             scale_label = "", 
+                             threshold = 365/2
+                             )
+
+```
+
+```{r, echo=TRUE}
+mhw_table <-"arise15_decade_metrics"
+arise15_raster_list <- durations_by_decade_raster(db, mhw_table)
+plot_rasters_squish_outliers(arise15_raster_list, title = "", 
+                             subtitle = "",
+                             scale_label = "", 
+                             threshold = 365/2
+                             )
+```
+
+```{r, echo=TRUE}
+mhw_table <-"ssp245_decade_metrics"
+ssp245_raster_list <- durations_by_decade_raster(db, mhw_table)
+ssp245_raster_list
+
+```
+
+
+### Difference
+
+```{r, echo=TRUE}
+
+
+arise_diff <- ssp245_raster_list - arise15_raster_list 
+
+plot_rasters_squish_outliers(arise_diff, 
+                             title = "SSP2 4.5 minus ARISE1.5", 
+                             subtitle = "",
+                             scale_label = "", 
+                             palette="blues"
+                             )
+```
+

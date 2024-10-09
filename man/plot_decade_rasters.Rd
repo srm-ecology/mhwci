@@ -7,5 +7,7 @@
 plot_decade_rasters(mhwdb_conn, mhw_table)
 }
 \description{
-use plot_rasters_squish_outliers instead to plot mhw rasters
+this is no longer used.  Please use use plot_rasters_squish_outliers() 
+instead to plot mhw rasters and don't set any thresholds to show
+all the data
 }
