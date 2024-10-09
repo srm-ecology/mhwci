@@ -48,50 +48,86 @@ percentile_cutoff_value<- function(x, cut_percent = 1){
 #' @param scale_label character, label to print above the legend/scale
 #' @param cut_percent numeric percentile cut-off, see percentile_cutoff_value function for descriptoin, but 1 
 #' will cut top 1 percent, 0.25 will cut to 0.25% off and display as top color (e.g. red)
-#' @param threshold_value numeric optional numeric cut off the range display.  if this is sent, then cut_percent is ignored 
+#' @param max_threshold_value numeric optional numeric cut off the range display.  if this is sent, then cut_percent is ignored 
+#' @param min_threshold_value numeric optional numeric cut off the bottom of the range.
+#' @param break_width numeric, default NA.  If this is set, then uses the non-continous bars and this is the width of those
+#' @param palette_name string this must be a valid palette from 
+#'    https://dieghernan.github.io/tidyterra/reference/grass_db.html, 
+#'    and you can preview the colors on 
+#'    https://grass.osgeo.org/grass83/manuals/r.colors.html (but get the name
+#'    from the tidyterra reference)
+#'
 #' @returns ggplot object, one map for each item in raster_list with single legend 
 #' @export
 plot_rasters_squish_outliers <- function(raster_list, 
                                          title = "", 
+                                         subtitle = "",
                                          scale_label = "", 
                                          cut_percent = 0, 
-                                         threshold_value = NA){
+                                         max_threshold_value = NA, 
+                                         min_threshold_value =NA, 
+                                         break_width = NA, 
+                                         palette_name = 'bgyr'){
   # where to cut off the values so that 
-  if( is.na(threshold_value)){
+  if( is.na(max_threshold_value)){
     # if cut percent is 0, will not cut of the range
     cut_value <- percentile_cutoff_value(terra::values(raster_list), cut_percent = cut_percent)  
     if( cut_percent > 0) {
-      subtitle = paste("by lat/lon point, compressing top ", cut_percent, " percentile outliers") 
+      subtitle <- paste("by lat/lon point, compressing top ", cut_percent, " percentile outliers") 
     } else {
-      subtitle = ""
+      subtitle <- ""
     }
   } else {
     # TODO check that threshold_value is in range? 
-    cut_value <- threshold_value
-    subtitle = paste("compressed all values above ", threshold_value) 
+    cut_value <- max_threshold_value
+    subtitle <- subtitle
   }
   
+  if(is.na(min_threshold_value)){ 
+    min_scale_value <- min(terra::values(raster_list))
+  } else {
+      min_scale_value <- min_threshold_value
+  }
   
+
   g<-ggplot2::ggplot() +
     tidyterra::geom_spatraster(data = raster_list, inherit.aes = TRUE) +
     ggplot2::labs(
       fill = scale_label,
       title = title,
       subtitle = subtitle
-    ) +
-    ggplot2::facet_wrap(~lyr,ncol= 1) + 
-    tidyterra::scale_fill_whitebox_c(
-      palette = 'bl_yl_rd', 
-      limits = c(min(terra::values(raster_list)),cut_value), 
-      oob = scales::squish) + 
-    ggplot2::theme_void()
+    )
+  
+    if(is.na(break_width)) {
+     g <- g + ggplot2::facet_wrap(~lyr,ncol= 1) + 
+       tidyterra::scale_fill_grass_c(
+         palette = palette_name,
+         limits = c(min_scale_value,cut_value), 
+         na.value = 'ivory3',
+         oob = scales::squish)  
+    } else {
+      g <- g + ggplot2::facet_wrap(~lyr,ncol= 1) + 
+       tidyterra::scale_fill_grass_b(
+       palette = palette_name,
+       breaks = seq(0, cut_value, break_width),
+       limits = c(min_scale_value,cut_value), 
+       na.value = 'ivory3',
+       oob = scales::squish)
+      } 
+    g <- g + ggplot2::theme_void()
   
   return(g)
 }
 
+
+
+
 #' plot of world rasters by layer, no outlier management
 #' 
-#' use plot_rasters_squish_outliers instead to plot mhw rasters
+#' this is no longer used.  Please use use plot_rasters_squish_outliers() 
+#' instead to plot mhw rasters and don't set any thresholds to show
+#' all the data
+#' 
 #' @export 
 plot_decade_rasters <- function(mhwdb_conn, mhw_table){
   if (! check_mhw_connection(mhwdb_conn)) { 
@@ -107,11 +143,15 @@ plot_decade_rasters <- function(mhwdb_conn, mhw_table){
       title = "Mean MHW Duration (days) by Decade of Onset",
       subtitle = "by lat/lon point") +
     ggplot2::facet_wrap(~lyr,ncol= 1) +
-    tidyterra::scale_fill_whitebox_c(
+    tidyterra::scale_fill_terrain_c(
       palette = "muted",
       na.value = "white"
     )
 }
+
+
+
+
 
 
 #' @export

@@ -19,6 +19,9 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(magrittr)
 library(mhwci)
+library(ggplot2)
+require(duckdb)
+
 
 ```
 
@@ -84,33 +87,66 @@ raster_list <- durations_by_decade_raster(db, mhw_table)
 print(raster_list)
 ```
 
-Plot this list of rasters, setting the name of the metric (average duration) and the threshold of 1/2 year
+Plot this list of rasters, setting the name of the metric (average duration) and the threshold of 1/2 year.  Set the title to "" to not have a title.  
 
 ```{r, echo=TRUE}
 plot_rasters_squish_outliers(raster_list, title = mhw_table, 
+                             subtitle = "average duration",
                              scale_label = "Average Duration, d", 
                              )
 
 ```
 
+The reason there is no visible effect is because of the very long tail in the distribution. 
 
-## Plot duration other scenarios
+```{r, echo=TRUE}
+# plot histogram of 3rd raster, 2060-
 
-Combine the commands above to plot the other scenarios.  Note we change the title manually.  This re-uses the connection object `db` we created above.   The `duration_rasters()` function calls the function to create and run the SQL on the database
+avg_dur_2060_69 <- na.omit(terra::values(raster_list[['2060']] ))
+
+ggplot()+geom_histogram(aes(avg_dur_2060_69), bins=100)
+g<- ggplot()+geom_histogram(aes(na.omit(terra::values(raster_list[[3]]))), bins=100)
+
+```
+
+**Log Scale on X and Y**
+
+
+```{r, echo=TRUE}
+g + ggplot2::scale_x_log10() + ggplot2::scale_y_log10() 
+
+```
+
+
+## Plot duration other scenarios, set threshold
+
+Combine the commands above to plot the other scenarios.  This re-uses the connection object `db` we created above.   The `durations_by_decade_raster()` creates the SQL and run is against on the database
+
+For plotting you can change the titles but also sets the max_threshold_value to 1/2 year for this example.   **Note: * this parameter used to be just `threshold` but now there is `max_threshold_value` and `min_threshold_value`* **
+
 
 ```{r, echo=TRUE}
 raster_list <- durations_by_decade_raster(db, mhw_table= "arise15_decade_metrics")
 plot_rasters_squish_outliers(raster_list, title = "ARISE 1.5 Average Duration", 
+                             subtitle = "Threshold 1/2 year",
                              scale_label = "Mean Duration, d", 
-                             threshold = 365/2)
+                             max_threshold_value = 365/2)
 
 
 ```
+
+For this function, by default, the color scale is continuous. If you send a `break_width` parameter it will make it discrete.  and also set a different color palette.  See the reference documentation for `plot_rasters_squish_outliers()` function for details 
+
 ```{r, echo=TRUE}
 raster_list <- durations_by_decade_raster(db, mhw_table= "ssp245_decade_metrics")
+grass_palette_name <- "kelvin"
 plot_rasters_squish_outliers(raster_list, title = "SSP2 4.5 Average Duration", 
+                             subtitle = paste("testing", grass_palette_name, "colr palette"),
                              scale_label = "Mean Duration, d", 
-                             threshold = 365/2)
+                             max_threshold_value = 1000,
+                             break_width = 50,
+                             palette_name = grass_palette_name
+                             )
 
 
 ```
@@ -169,8 +205,8 @@ This SQL averages duration for the specific table
 
 ```{r, echo=TRUE}
 # this is a function that creates a string of SQL with the table we want to use
-sql<- avg_duration_by_decade_sql(mhw_table)
-print(sql)
+sql_text<- avg_duration_by_decade_sql(mhw_table)
+print(sql_text )
 ```
 
 
@@ -178,7 +214,7 @@ Here is how you run a query:
 
 ```{r, echo=TRUE}
 # run this SQL using the `dbGetQuery` command.  
-duration_by_loc<- DBI::dbGetQuery(db, sql)
+duration_by_loc<- DBI::dbGetQuery(db, sql_text)
 # show the first few rows
 head(duration_by_loc)
 ```
