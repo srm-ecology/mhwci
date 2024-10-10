@@ -34,6 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/importing_into_database.html">Working with the MHW-CI database</a></li>
+    <li><a class="dropdown-item" href="../articles/plotting_differences.html">Plotting differences of rasters</a></li>
     <li><a class="dropdown-item" href="../articles/using_mhw_database.html">Using the MHW-CI database to plot</a></li>
   </ul>
 </li>
@@ -97,7 +98,7 @@ function:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">db</span><span class="op">&lt;-</span> <span class="fu">mhwci</span><span class="fu">::</span><span class="fu"><a href="../reference/mhw_connect.html">mhw_connect</a></span><span class="op">(</span><span class="va">db_file</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;duckdb_connection 3d4a0 driver=&lt;duckdb_driver dbdir='/Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v3.db' read_only=FALSE bigint=numeric&gt;&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;duckdb_connection b7a20 driver=&lt;duckdb_driver dbdir='/Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v3.db' read_only=FALSE bigint=numeric&gt;&gt;</span></span></code></pre></div>
 <p>This isn’t actually the database, just a connection to it required
 for all database functions.</p>
 <p>Now you could list the tables in the database:</p>
@@ -300,13 +301,13 @@ which is very fast.</p>
 <span><span class="va">duration_by_loc</span><span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span><span class="va">db</span>, <span class="va">sql_text</span><span class="op">)</span></span>
 <span><span class="co"># show the first few rows</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">duration_by_loc</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          lat    lon decade   avg_dur</span></span>
-<span><span class="co">#&gt; 1  27.801048 268.75   2050  34.48000</span></span>
-<span><span class="co">#&gt; 2  86.230367 268.75   2050  83.06504</span></span>
-<span><span class="co">#&gt; 3 -43.821989 270.00   2050  36.46243</span></span>
-<span><span class="co">#&gt; 4 -11.780104 270.00   2050 108.82394</span></span>
-<span><span class="co">#&gt; 5  -8.952879 270.00   2050 122.76800</span></span>
-<span><span class="co">#&gt; 6  11.780105 270.00   2050  38.21574</span></span></code></pre></div>
+<span><span class="co">#&gt;         lat   lon decade   avg_dur</span></span>
+<span><span class="co">#&gt; 1  71.15183 61.25   2060  48.12207</span></span>
+<span><span class="co">#&gt; 2  72.09424 61.25   2060  59.98469</span></span>
+<span><span class="co">#&gt; 3  86.23037 61.25   2060  27.95333</span></span>
+<span><span class="co">#&gt; 4  89.05759 61.25   2060  37.35859</span></span>
+<span><span class="co">#&gt; 5 -58.90052 62.50   2060  81.50704</span></span>
+<span><span class="co">#&gt; 6 -56.07330 62.50   2060 162.74847</span></span></code></pre></div>
 <p>Now close the connection used here, otherwise there may be errors
 (“could not set lock on file …”)</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
