@@ -8,61 +8,97 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+knitr::clean_cache(clean = TRUE)
+
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.dim = c(8, 6)
 )
+
 ```
 
 ```{r setup}
 library(magrittr)
 library(mhwci)
+library(ggplot2)
+
 ```
 
-```{r, echo=TRUE}
+```{r create_rasters_from_db, echo=TRUE}
+
 # read from the environment
 db_file <- mhwci::get_dbfile()
 db<- mhwci::mhw_connect(db_file)
-mhw_table <-"arise10_decade_metrics"
-arise10_raster_list <- durations_by_decade_raster(db, mhw_table)
-plot_rasters_squish_outliers(arise10_raster_list, title = "", 
-                             subtitle = "",
-                             scale_label = "", 
-                             threshold = 365/2
-                             )
 
-```
+# this may take signifigant memory
+arise10_raster_list <- durations_by_decade_raster(db, mhw_table = "arise10_decade_metrics")
+arise15_raster_list <- durations_by_decade_raster(db, mhw_table = "arise15_decade_metrics")
+ssp245_raster_list <- durations_by_decade_raster(db, mhw_table = "ssp245_decade_metrics")
 
-```{r, echo=TRUE}
-mhw_table <-"arise15_decade_metrics"
-arise15_raster_list <- durations_by_decade_raster(db, mhw_table)
-plot_rasters_squish_outliers(arise15_raster_list, title = "", 
-                             subtitle = "",
-                             scale_label = "", 
-                             threshold = 365/2
-                             )
-```
-
-```{r, echo=TRUE}
-mhw_table <-"ssp245_decade_metrics"
-ssp245_raster_list <- durations_by_decade_raster(db, mhw_table)
 ssp245_raster_list
-
 ```
 
 
-### Difference
-
-```{r, echo=TRUE}
-
-
+```{r , echo=TRUE}
 arise_diff <- ssp245_raster_list - arise15_raster_list 
-
 plot_rasters_squish_outliers(arise_diff, 
                              title = "SSP2 4.5 minus ARISE1.5", 
                              subtitle = "",
                              scale_label = "", 
-                             palette="blues"
+                             palette="water",
+                             max_threshold_value = 500,
+                             break_width = 50
                              )
+
 ```
 
+
+There is not a red-white-blue color scheme, this is using the 'water' palette.  You could also try the 'blues' palette. 
+
+
+### Difference Density plots
+
+This is not the best way to do this.   The density plot requires the database to be in 'long form' or 
+```
+value decade
+ 3     2040
+ 2     2040
+ ...
+ 3.1   2050
+ etc
+ ```
+ 
+This does not remove outliers so it's hard to visualize 
+
+Note it requires the 'reshape' package, which you may have to install
+
+```{r}
+DBI::dbDisconnect(db)
+library(reshape)
+```
+
+
+```{r, echo=TRUE}
+
+diff_values<- data.frame(lapply(arise_diff, terra::values))
+names(diff_values)<- decades  
+diff_values_long_form <- na.omit(reshape::melt(diff_values))
+
+#plot full range of difference, which includes a huge range
+
+g<- ggplot(diff_values_long_form , aes(x=value, fill=variable)) + geom_density(na.rm = TRUE)
+print(g)
+
+# this just strips out the outliers, which removes data, but it looks nicer
+g+ xlim(-100, 500)
+
+
+```
+
+
+
+```{r}
+
+DBI::dbDisconnect(db)
+```
