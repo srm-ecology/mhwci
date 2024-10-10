@@ -87,7 +87,7 @@ diff_values_long_form <- na.omit(reshape::melt(diff_values))
 
 #plot full range of difference, which includes a huge range
 
-g<- ggplot(diff_values_long_form , aes(x=value, fill=variable)) + geom_density(na.rm = TRUE)
+g<- ggplot(diff_values_long_form , aes(x=value, fill=variable)) + geom_density(na.rm = TRUE, alpha = 0.25)
 print(g)
 
 # this just strips out the outliers, which removes data, but it looks nicer
