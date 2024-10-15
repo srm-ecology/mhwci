@@ -5,13 +5,13 @@
 
 #' find value for percentile cut-off
 #' 
-#' given a range of values, find the max value just before a percentile, say 1% , 
+#' given a range of values, find the max value just before a percentile, say 1\% , 
 #' used to divide a range into two bins or set an upper limit.  If a whole number is sent, 
-#' the percentiles are sequenced by 1% (0, 1..98, 98, 100) Ff a non-whole number is sent
-#' like 2.25% or 0.25% then the percentiles are divided into finer resolution (e.g per 0.25%)
+#' the percentiles are sequenced by 1\% (0, 1..98, 98, 100) Ff a non-whole number is sent
+#' like 2.25\% or 0.25\% then the percentiles are divided into finer resolution (e.g per 0.25\%)
 #' 
 #' @param x values to find the cut-off in, numeric vector
-#' @param cut_percent numeric  top percent to cut e.g. 1 to cut top 1% See description should be 0<x<100 and can be decimal
+#' @param cut_percent numeric  top percent to cut e.g. 1 to cut top 1\% See description should be 0<x<100 and can be decimal
 #' @return numeric value in x that is the max befoe the percentile indicated by cut_percent
 #' @export 
 percentile_cutoff_value<- function(x, cut_percent = 1){
@@ -24,7 +24,7 @@ percentile_cutoff_value<- function(x, cut_percent = 1){
   
   percentiles <- quantile(x, seq(from = 0, to = 1, by = divisor), na.rm = TRUE)
   
-  # names are characters like '99%', create such a name to find the value we want
+  # names are characters like '99\%', create such a name to find the value we want
   cut_name = paste0(as.character(100-cut_percent), "%")
   # send a warning is something is off and this percent is not in our percentiles
   if(!cut_name %in% names(percentiles)) {
@@ -37,6 +37,13 @@ percentile_cutoff_value<- function(x, cut_percent = 1){
 }
 
 
+#' palette_name must be 
+#'    https://dieghernan.github.io/tidyterra/reference/grass_db.html, 
+#'    and you can preview the colors on 
+#'    https://grass.osgeo.org/grass83/manuals/r.colors.html (but get the name
+#'    from the tidyterra reference)
+#'    
+#'    
 
 #' plot terra rasters, but manage outliers
 #' 
@@ -47,16 +54,11 @@ percentile_cutoff_value<- function(x, cut_percent = 1){
 #' @param title character title of the plot, default is empty title
 #' @param scale_label character, label to print above the legend/scale
 #' @param cut_percent numeric percentile cut-off, see percentile_cutoff_value function for descriptoin, but 1 
-#' will cut top 1 percent, 0.25 will cut to 0.25% off and display as top color (e.g. red)
+#'        will cut top 1 percent, 0.25 will cut to 0.25\% off and display as top color (e.g. red)
 #' @param max_threshold_value numeric optional numeric cut off the range display.  if this is sent, then cut_percent is ignored 
 #' @param min_threshold_value numeric optional numeric cut off the bottom of the range.
 #' @param break_width numeric, default NA.  If this is set, then uses the non-continous bars and this is the width of those
 #' @param palette_name string this must be a valid palette from 
-#'    https://dieghernan.github.io/tidyterra/reference/grass_db.html, 
-#'    and you can preview the colors on 
-#'    https://grass.osgeo.org/grass83/manuals/r.colors.html (but get the name
-#'    from the tidyterra reference)
-#'
 #' @return ggplot object, one map for each item in raster_list with single legend 
 #' @export
 plot_rasters_squish_outliers <- function(raster_list, 
@@ -154,6 +156,8 @@ plot_decade_rasters <- function(mhwdb_conn, mhw_table){
 
 
 
+#' create history for a raster list
+#' 
 #' @export
 duration__histogram<-function(raster_list, log_scale = FALSE){
   
