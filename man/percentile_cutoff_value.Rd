@@ -9,14 +9,14 @@ percentile_cutoff_value(x, cut_percent = 1)
 \arguments{
 \item{x}{values to find the cut-off in, numeric vector}
 
-\item{cut_percent}{numeric  top percent to cut e.g. 1 to cut top 1% See description should be 0<x<100 and can be decimal}
+\item{cut_percent}{numeric  top percent to cut e.g. 1 to cut top 1\% See description should be 0<x<100 and can be decimal}
 }
 \value{
 numeric value in x that is the max befoe the percentile indicated by cut_percent
 }
 \description{
-given a range of values, find the max value just before a percentile, say 1% , 
+given a range of values, find the max value just before a percentile, say 1\% , 
 used to divide a range into two bins or set an upper limit.  If a whole number is sent, 
-the percentiles are sequenced by 1% (0, 1..98, 98, 100) Ff a non-whole number is sent
-like 2.25% or 0.25% then the percentiles are divided into finer resolution (e.g per 0.25%)
+the percentiles are sequenced by 1\% (0, 1..98, 98, 100) Ff a non-whole number is sent
+like 2.25\% or 0.25\% then the percentiles are divided into finer resolution (e.g per 0.25\%)
 }

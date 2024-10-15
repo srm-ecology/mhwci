@@ -11,7 +11,7 @@ mhw_metric_summary_sql(
   start_year = 2040,
   end_year = 2069,
   ensemble_list_string = NA,
-  group_id = NULL
+  group_id_value = NULL
 )
 }
 \arguments{
@@ -31,7 +31,7 @@ ensembles have leading zeros, are 3 digits and this must be a separated list wit
 \item{sqlfun}{= avg; character aggregate function for duckdb, for example avg, count or median, 
 see https://duckdb.org/docs/sql/functions/aggregates,}
 
-\item{group_id=NA}{optional value to set as an arbitrary  'group' value for all of the rows for these results 
+\item{group_id_value=NULL}{optional value to set as an arbitrary  'group' value for all of the rows for these results 
 this is useful if these results will be combined with other results and need to be identified. 
 for example the gorup=2040 for the decade.  The default is NULL then it's ignored and not group column is NULL.
 Note that this is not used for grouping in this step, this step only produces on group}

@@ -1,0 +1,129 @@
+---
+title: "plotting_differences_of_other_metrics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{plotting_differences_of_other_metrics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(mhwci)
+devtools::load_all()
+db <- mhw_connect(get_dbfile())
+
+```
+
+# Plotting differences of other metrics
+
+Currently this package has functions that only compute summaries of duration, 
+which were created at beginning as we designed the workflow. 
+
+There is a generic function `mhw_metric_summary_sql()` 
+
+### Example difference for one decade:
+
+Calculate the differences of the **max of max intensity** (extremes) only for **2040 to 2049**
+
+```{r, echo=TRUE}
+
+# in thse two function calls, all the parameters are the same
+valid_ensembles <- "006,007,008,009,010"
+arise15_sql <- mhw_metric_summary_sql(mhw_table = "arise15_decade_metrics", 
+                            mhw_metric = 'int_max', 
+                            sql_function = 'max', 
+                            start_year=2040, 
+                            end_year=2049,
+                            ensemble_list_string = valid_ensembles) 
+
+arise15_raster <- summary_metrics_raster(db, arise15_sql)
+
+## --- 
+ssp245_sql <- mhw_metric_summary_sql(mhw_table = "ssp245_decade_metrics", 
+                            mhw_metric = 'int_max', 
+                            sql_function = 'max', 
+                            start_year=2040, 
+                            end_year=2049,
+                            ensemble_list_string = valid_ensembles) 
+  
+ssp245_raster <-  summary_metrics_raster(db, ssp245_sql)
+arise_max_int_diff <- ssp245_raster - arise15_raster
+plot(arise_max_int_diff, main = "difference max of max intensity, \nSSP2 4.5 - ARISE 1.5, \n2040-2049")
+
+```
+### Example difference plot for 3 decades:
+
+Calculate the differences of the **max of max intensity** 
+
+```{r, echo=TRUE}
+
+# we are using an 'internal' function write to be used inside an 'lapply()'  
+
+# it's easier to set variables set above or hard-coded values in the function
+# we apply, but see the `lapply()` help for how to send extra parameters
+
+# adjust the parameters inside our function to change which metric is calculated
+# takes on parameter - the one we are applying over (decade start years)
+make_raster_function<- function(period_start_year ) {
+      # make the sql                                
+      mhw_sql <- mhw_metric_summary_sql(mhw_table = mhw_table, 
+                            mhw_metric = 'int_max', 
+                            sql_function = 'max', 
+                            start_year = period_start_year, 
+                            end_year = period_start_year + period_length_years - 1,
+                            ensemble_list_string = "006,007,008,009,010") 
+      
+      # call the sql and create the raster
+      mhw_raster <- summary_metrics_raster(db, mhw_sql)
+      return(mhw_raster)
+}
+
+## --- 
+# set the parameters here for the apply function
+# db is already set above, otherwise use `db <- mhw_connect(dbfile)` again
+start_years <- c(2040, 2050, 2060)
+period_length_years  <- 10
+mhw_metric  <-  'int_max' 
+sql_function  <-  'max'
+
+# set the table that the function above will use
+mhw_table <-  "ssp245_decade_metrics"
+ssp245_rasters <- lapply(start_years, make_raster_function)
+# terra requires this step in it's own line to create a 'raster stack' of 'spat rasters'
+ssp245_rasters <- terra::rast(ssp245_rasters)
+# use the start years for name of list items 
+names(ssp245_rasters) <- start_years
+
+mhw_table <-  "arise15_decade_metrics"
+arise15_rasters <- lapply(start_years, make_raster_function)
+arise15_rasters <- terra::rast(arise15_rasters)
+# use the start years for name of list items 
+names(arise15_rasters) <- start_years
+
+# I believe the lists must have the same 'names' for subtraction to work with
+# a list of rasters
+
+mhw_diffs <- ssp245_rasters - arise15_rasters
+mhw_diffs
+
+
+```
+
+Plot: 
+
+```{r echo=TRUE}
+plot_rasters_squish_outliers(mhw_diffs)
+```
+
+
+```{r}
+
+DBI::dbDisconnect(db)
+```

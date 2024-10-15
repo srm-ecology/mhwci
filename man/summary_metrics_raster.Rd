@@ -7,7 +7,6 @@
 summary_metrics_raster(
   mhwdb_conn,
   mhw_sql,
-  mhw_value_name,
   rotate_globe = TRUE,
   crs = "EPSG:4087"
 )

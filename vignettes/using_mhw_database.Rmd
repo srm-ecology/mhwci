@@ -166,6 +166,7 @@ mhw_metric <- 'int_mean'
 sql_function <- 'avg'
 
 #create the rasters for each decade for this metric, similar to duration but tis is a generic function
+rm(raster_list)
 raster_list <- metrics_by_decade_raster(db, mhw_table, mhw_metric = mhw_metric, sql_function = sql_function)
 
 # plot, constructing the title from the variables we set above
@@ -223,5 +224,7 @@ Now close the connection used here, otherwise there may be errors ("could not se
 
 
 ```{r, echo=TRUE}
-DBI::dbDisconnect(db)
+rm(duration_by_loc, raster_list)
+
+dbDisconnect(db)
 ```

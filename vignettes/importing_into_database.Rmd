@@ -124,4 +124,7 @@ See the file `db/example.sql` which has the comment
 
 if the SQL commands return a table, it will be previewed.  If the commands create tables (those are called "data definition language" or DDL commands) then they should still run in Rstudio provide the path to the CSV files in the SQL commands is correct. 
 
+```{r}
+try(dbDisconnect(db), silent= TRUE)
+```
 

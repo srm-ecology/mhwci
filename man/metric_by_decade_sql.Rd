@@ -31,6 +31,10 @@ ensembles have leaving zeros, are 3 digits and this must be a separated list wit
 character SQL code to run on the MHW database
 }
 \description{
+THIS will divide up a date range into 10 year periods only.  For a function that can do 
+any length period (2, 5, 10, 20, 30 yrs, etc), see mhw_metric_summary_sql() in mhw_summary.R
+}
+\details{
 this is a convenience function to construct sql to group by decades for one of the metrics
 calculating the decade and grouping is tricky so that wraps that.
 }
