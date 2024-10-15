@@ -3,6 +3,7 @@
 <url><loc>https://srm-ecology.github.io/mhwci/articles/importing_into_database.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/articles/index.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/articles/plotting_differences.html</loc></url>
+<url><loc>https://srm-ecology.github.io/mhwci/articles/plotting_differences_of_other_metrics.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/articles/using_mhw_database.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/authors.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/index.html</loc></url>
@@ -12,6 +13,7 @@
 <url><loc>https://srm-ecology.github.io/mhwci/reference/create_partition_df.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/create_partition_table.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/decades.html</loc></url>
+<url><loc>https://srm-ecology.github.io/mhwci/reference/duration__histogram.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/duration_by_decade_sql.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/duration_by_decades.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/durations_by_decade_raster.html</loc></url>
@@ -31,6 +33,7 @@
 <url><loc>https://srm-ecology.github.io/mhwci/reference/plot_decade_rasters.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/plot_rasters_squish_outliers.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/sql_head.html</loc></url>
+<url><loc>https://srm-ecology.github.io/mhwci/reference/summary_by_decades_raster.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/summary_metrics_raster.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/table_head.html</loc></url>
 <url><loc>https://srm-ecology.github.io/mhwci/reference/windowing_overlap.html</loc></url>

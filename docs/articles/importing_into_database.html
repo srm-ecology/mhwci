@@ -34,6 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/importing_into_database.html">Working with the MHW-CI database</a></li>
+    <li><a class="dropdown-item" href="../articles/plotting_differences_of_other_metrics.html">plotting_differences_of_other_metrics</a></li>
     <li><a class="dropdown-item" href="../articles/plotting_differences.html">Plotting differences of rasters</a></li>
     <li><a class="dropdown-item" href="../articles/using_mhw_database.html">Using the MHW-CI database to plot</a></li>
   </ul>
@@ -210,6 +211,8 @@ to your R project folder.</p>
 commands create tables (those are called “data definition language” or
 DDL commands) then they should still run in Rstudio provide the path to
 the CSV files in the SQL commands is correct.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">dbDisconnect</span><span class="op">(</span><span class="va">db</span><span class="op">)</span>, silent<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

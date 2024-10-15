@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/importing_into_database.html">Working with the MHW-CI database</a></li>
+    <li><a class="dropdown-item" href="../articles/plotting_differences_of_other_metrics.html">plotting_differences_of_other_metrics</a></li>
     <li><a class="dropdown-item" href="../articles/plotting_differences.html">Plotting differences of rasters</a></li>
     <li><a class="dropdown-item" href="../articles/using_mhw_database.html">Using the MHW-CI database to plot</a></li>
   </ul></li>
@@ -82,6 +83,12 @@
 
         </dt>
         <dd>main decades to use for analysis</dd>
+      </dl><dl><dt>
+
+          <code><a href="duration__histogram.html">duration__histogram()</a></code>
+
+        </dt>
+        <dd>create history for a raster list</dd>
       </dl><dl><dt>
 
           <code><a href="duration_by_decade_sql.html">duration_by_decade_sql()</a></code>
@@ -183,13 +190,19 @@
           <code><a href="plot_rasters_squish_outliers.html">plot_rasters_squish_outliers()</a></code>
 
         </dt>
-        <dd>plot terra rasters, but manage outliers</dd>
+        <dd>palette_name must be https://dieghernan.github.io/tidyterra/reference/grass_db.html, and you can preview the colors on https://grass.osgeo.org/grass83/manuals/r.colors.html (but get the name from the tidyterra reference) plot terra rasters, but manage outliers</dd>
       </dl><dl><dt>
 
           <code><a href="sql_head.html">sql_head()</a></code>
 
         </dt>
         <dd>get first few rows from a sql statement</dd>
+      </dl><dl><dt>
+
+          <code><a href="summary_by_decades_raster.html">summary_by_decades_raster()</a></code>
+
+        </dt>
+        <dd>summarize a metric grouped by decades 2040 2050 2060</dd>
       </dl><dl><dt>
 
           <code><a href="summary_metrics_raster.html">summary_metrics_raster()</a></code>

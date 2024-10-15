@@ -31,6 +31,7 @@ pattern sql_function_mhw_metric  ( example avg_int_max)"></head><body>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/importing_into_database.html">Working with the MHW-CI database</a></li>
+    <li><a class="dropdown-item" href="../articles/plotting_differences_of_other_metrics.html">plotting_differences_of_other_metrics</a></li>
     <li><a class="dropdown-item" href="../articles/plotting_differences.html">Plotting differences of rasters</a></li>
     <li><a class="dropdown-item" href="../articles/using_mhw_database.html">Using the MHW-CI database to plot</a></li>
   </ul></li>
@@ -68,7 +69,7 @@ pattern sql_function_mhw_metric  ( example avg_int_max)</p>
 <span>  start_year <span class="op">=</span> <span class="fl">2040</span>,</span>
 <span>  end_year <span class="op">=</span> <span class="fl">2069</span>,</span>
 <span>  ensemble_list_string <span class="op">=</span> <span class="cn">NA</span>,</span>
-<span>  group_id <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  group_id_value <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -104,7 +105,7 @@ ensembles have leading zeros, are 3 digits and this must be a separated list wit
 see https://duckdb.org/docs/sql/functions/aggregates,</p></dd>
 
 
-<dt id="arg-group-id-na">group_id=NA<a class="anchor" aria-label="anchor" href="#arg-group-id-na"></a></dt>
+<dt id="arg-group-id-value-null">group_id_value=NULL<a class="anchor" aria-label="anchor" href="#arg-group-id-value-null"></a></dt>
 <dd><p>optional value to set as an arbitrary  'group' value for all of the rows for these results
 this is useful if these results will be combined with other results and need to be identified.
 for example the gorup=2040 for the decade.  The default is NULL then it's ignored and not group column is NULL.

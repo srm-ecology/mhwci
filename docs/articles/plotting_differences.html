@@ -34,6 +34,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/importing_into_database.html">Working with the MHW-CI database</a></li>
+    <li><a class="dropdown-item" href="../articles/plotting_differences_of_other_metrics.html">plotting_differences_of_other_metrics</a></li>
     <li><a class="dropdown-item" href="../articles/plotting_differences.html">Plotting differences of rasters</a></li>
     <li><a class="dropdown-item" href="../articles/using_mhw_database.html">Using the MHW-CI database to plot</a></li>
   </ul>
@@ -74,8 +75,14 @@
 <span><span class="co"># read from the environment</span></span>
 <span><span class="va">db_file</span> <span class="op">&lt;-</span> <span class="fu">mhwci</span><span class="fu">::</span><span class="fu"><a href="../reference/get_dbfile.html">get_dbfile</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in mhwci::get_dbfile(): default dbfile set to</span></span>
-<span><span class="co">#&gt; /Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v3.db</span></span></code></pre></div>
+<span><span class="co">#&gt; /Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v4.db</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">db_file</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "/Users/billspat/Code/SpaCELab/marine_heatwave_work/mhwci/db/mhwci_v4.db"</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">dbDisconnect</span><span class="op">(</span><span class="va">db</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in dbDisconnect(db) : could not find function "dbDisconnect"</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">db</span><span class="op">&lt;-</span> <span class="fu">mhwci</span><span class="fu">::</span><span class="fu"><a href="../reference/mhw_connect.html">mhw_connect</a></span><span class="op">(</span><span class="va">db_file</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># this may take signifigant memory</span></span>
@@ -93,7 +100,7 @@
 <span><span class="co">#&gt; names       : 2040, 2050, 2060 </span></span>
 <span><span class="co">#&gt; min values  :    5,    5,    5 </span></span>
 <span><span class="co">#&gt; max values  : 3650, 3650, 3650</span></span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">arise_diff</span> <span class="op">&lt;-</span> <span class="va">ssp245_raster_list</span> <span class="op">-</span> <span class="va">arise15_raster_list</span> </span>
 <span><span class="fu"><a href="../reference/plot_rasters_squish_outliers.html">plot_rasters_squish_outliers</a></span><span class="op">(</span><span class="va">arise_diff</span>, </span>
 <span>                             title <span class="op">=</span> <span class="st">"SSP2 4.5 minus ARISE1.5"</span>, </span>
@@ -103,7 +110,7 @@
 <span>                             max_threshold_value <span class="op">=</span> <span class="fl">500</span>,</span>
 <span>                             break_width <span class="op">=</span> <span class="fl">50</span></span>
 <span>                             <span class="op">)</span></span></code></pre></div>
-<p><img src="plotting_differences_files/figure-html/unnamed-chunk-2-1.png" width="768"></p>
+<p><img src="plotting_differences_files/figure-html/diffplot-1.png" alt="difference in mean duration SSP2 4.5 minus ARISE1.5" width="768"></p>
 <p>There is not a red-white-blue color scheme, this is using the ‘water’
 palette. You could also try the ‘blues’ palette.</p>
 <div class="section level3">
@@ -120,31 +127,31 @@ database to be in ‘long form’ or</p>
 <p>This does not remove outliers so it’s hard to visualize</p>
 <p>Note it requires the ‘reshape’ package, which you may have to
 install</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://had.co.nz/reshape" class="external-link">reshape</a></span><span class="op">)</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://had.co.nz/reshape" class="external-link">reshape</a></span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="va">diff_values</span><span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">arise_diff</span>, <span class="fu">terra</span><span class="fu">::</span><span class="va"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">diff_values</span><span class="op">)</span><span class="op">&lt;-</span> <span class="va">decades</span>  </span>
 <span><span class="va">diff_values_long_form</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="fu">reshape</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reshape/man/melt-24.html" class="external-link">melt</a></span><span class="op">(</span><span class="va">diff_values</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Using  as id variables</span></span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#plot full range of difference, which includes a huge range</span></span>
 <span></span>
 <span><span class="va">g</span><span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">diff_values_long_form</span> , <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">value</span>, fill<span class="op">=</span><span class="va">variable</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span>na.rm <span class="op">=</span> <span class="cn">TRUE</span>, alpha <span class="op">=</span> <span class="fl">0.25</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div>
-<p><img src="plotting_differences_files/figure-html/unnamed-chunk-4-1.png" width="768"></p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<p><img src="plotting_differences_files/figure-html/densityplot-1.png" alt="density plot diff in mean duration SSP2 4.5 and ARISE 1.5" width="768"></p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co"># this just strips out the outliers, which removes data, but it looks nicer</span></span>
 <span><span class="va">g</span><span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="op">-</span><span class="fl">100</span>, <span class="fl">500</span><span class="op">)</span></span></code></pre></div>
-<p><img src="plotting_differences_files/figure-html/unnamed-chunk-4-2.png" width="768"></p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">db</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Warning: Connection already closed.</span></span></code></pre></div>
+<p><img src="plotting_differences_files/figure-html/densityplot-2.png" alt="density plot diff in mean duration SSP2 4.5 and ARISE 1.5" width="768"></p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># database cleanup</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">arise10_raster_list</span>, <span class="va">arise15_raster_list</span>,<span class="va">ssp245_raster_list</span>, <span class="va">arise_diff</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html" class="external-link">rm</a></span><span class="op">(</span><span class="va">diff_values</span>, <span class="va">diff_values_long_form</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">dbDisconnect</span><span class="op">(</span><span class="va">db</span><span class="op">)</span>, silent<span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main>
 </div>
