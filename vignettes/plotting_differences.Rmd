@@ -29,6 +29,7 @@ library(ggplot2)
 
 # read from the environment
 db_file <- mhwci::get_dbfile()
+print(db_file)
 db<- mhwci::mhw_connect(db_file)
 
 # this may take signifigant memory
@@ -96,6 +97,43 @@ g+ xlim(-100, 500)
 
 ```
 
+## Plotting differences of other metrics
+
+Currently this package has functions that only compute summaries of duration, 
+which were created at beginning as we designed the workflow. 
+
+There is a generic function `mhw_metric_summary_sql()` 
+
+### Example run for one decade:
+
+Calculate the differences of the **max of max intensity** (extremes) only for **2040 to 2049**
+
+```{r, echo=TRUE}
+
+# in thse two function calls, all the parameters are the same
+valid_ensembles <- "006,007,008,009,010"
+arise15_sql <- mhw_metric_summary_sql(mhw_table = "arise15_decade_metrics", 
+                            mhw_metric = 'int_max', 
+                            sql_function = 'max', 
+                            start_year=2040, 
+                            end_year=2049,
+                            ensemble_list_string = valid_ensembles) 
+
+arise15_raster <- summary_metrics_raster(db, arise15_sql)
+
+## --- 
+ssp245_sql <- mhw_metric_summary_sql(mhw_table = "ssp245_decade_metrics", 
+                            mhw_metric = 'int_max', 
+                            sql_function = 'max', 
+                            start_year=2040, 
+                            end_year=2049,
+                            ensemble_list_string = valid_ensembles) 
+  
+ssp245_raster <-  summary_metrics_raster(db, ssp245_sql)
+arise_max_int_diff <- ssp245_raster - arise15_raster
+plot(arise_max_int_diff, main = "difference max of max intensity, \nSSP2 4.5 - ARISE 1.5, \n2040-2049")
+
+```
 
 
 ```{r}

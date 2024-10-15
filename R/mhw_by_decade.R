@@ -104,6 +104,9 @@ avg_duration_by_decade_truncated_sql <- function(mhw_table,
 
 #' SQL template for all MHW metrics
 #' 
+#' THIS will divide up a date range into 10 year periods only.  For a function that can do 
+#' any length period (2, 5, 10, 20, 30 yrs, etc), see mhw_metric_summary_sql() in mhw_summary.R
+#' 
 #' this is a convenience function to construct sql to group by decades for one of the metrics
 #' calculating the decade and grouping is tricky so that wraps that.  
 #' @param mhw_table name of the table to use

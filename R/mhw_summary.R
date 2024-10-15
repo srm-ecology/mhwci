@@ -26,7 +26,7 @@ require(duckdb)
 #'     if it's string that  is a list of ensembles to include in format "006,007,008"  only those with matching 
 #'     ensemble will be included.  
 #'     ensembles have leading zeros, are 3 digits and this must be a separated list with leading zeros
-#' @param group_id=NA optional value to set as an arbitrary  'group' value for all of the rows for these results 
+#' @param group_id_value=NULL optional value to set as an arbitrary  'group' value for all of the rows for these results 
 #'        this is useful if these results will be combined with other results and need to be identified. 
 #'        for example the gorup=2040 for the decade.  The default is NULL then it's ignored and not group column is NULL.
 #'        Note that this is not used for grouping in this step, this step only produces on group  
@@ -38,7 +38,7 @@ mhw_metric_summary_sql <- function(mhw_table,
                                  start_year=2040, 
                                  end_year=2069,
                                  ensemble_list_string = NA,
-                                 group_id = NULL) {
+                                 group_id_value = NULL) {
   
   # if the ensemble list was sent, create the fragment of SQL that will filter on that list
   #
@@ -48,23 +48,37 @@ mhw_metric_summary_sql <- function(mhw_table,
     ensemble_filter <- ""
   }
   
-  if(is.null(group_id)) { group_id <- 'NULL'}
-  
+  if(is.null(group_id_value) || is.na(group_id_value)) { 
+    sql_template <- "SELECT 
+       lon, lat,
+       {sql_function}({mhw_metric}) as {sql_function}_{mhw_metric}, 
+      FROM 
+       {mhw_table} 
+      WHERE 
+        (mhw_onset/10000) >= {start_year} and ((mhw_onset - mod(mhw_onset,10000))/10000) <= {end_year} 
+        {ensemble_filter}
+      GROUP BY 
+        lon, lat
+      ORDER by 
+        lon, lat
+      "
+  } else {
+
   sql_template <- "SELECT 
-   lat, lon, 
-   group_id as 'group', 
-   {sql_function}({mhw_metric}) as {sql_function}_{mhw_metric}, 
-  FROM 
-   {mhw_table} 
-  WHERE 
-    (mhw_onset/10000) >= {start_year} and ((mhw_onset - mod(mhw_onset,10000))/10000) <= {end_year} 
-    {ensemble_filter}
-  GROUP BY 
-    lat, lon
-  ORDER by 
-    lat, lon;
-  "
-  
+     lon, lat, 
+     {group_id_value} as group_id, 
+     {sql_function}({mhw_metric}) as {sql_function}_{mhw_metric}, 
+    FROM 
+     {mhw_table} 
+    WHERE 
+      (mhw_onset/10000) >= {start_year} and ((mhw_onset - mod(mhw_onset,10000))/10000) <= {end_year} 
+      {ensemble_filter}
+    GROUP BY 
+      lon, lat, group_id
+    ORDER by 
+      lon, lat;
+    "
+  }
   sql <- glue::glue(sql_template)
   
   return(sql)
@@ -84,21 +98,74 @@ mhw_metric_summary_sql <- function(mhw_table,
 #'    meridian is centered, False, no rotation applied, this works if 
 #'    data is maped from 0 to 360 instead of -180 to 180
 #' @param crs = 'EPSG:4087' optional character coordinate reference system
-#' @returns single terra raster, if  
+#' @return single terra raster, if  
 #' @export
 summary_metrics_raster <- function(mhwdb_conn, 
                                    mhw_sql,
-                                   mhw_value_name,
                                    rotate_globe = TRUE,
                                    crs='EPSG:4087'){
+  # mhw_value_name,?
   
   summary_by_loc<- DBI::dbGetQuery(conn=mhwdb_conn, mhw_sql)
   mhw_raster <-terra::rast(summary_by_loc)
   # climate data is 0 to 360, use rotate to make -180 to 180
-  if(rotate_glob){
+  if(rotate_globe){
     mhw_raster <- terra::rotate(mhw_raster)
   }
   return(mhw_raster)
 }
+
+#' summarize a metric grouped by decades 2040 2050 2060
+#'
+#' runs summary and creates raster for a 10 year periods for given list of 
+#' starting years. uses the summary_by_decades_raster() function and sends 
+#' params to that, using the decade start year as the 'group id' value
+#' 
+#' @param mhw_table name of the table to use
+#' @param mhw_metric character name of metric ( column ) in the table to summarize: mhw_dur, int_mean, etc
+#' @param sqlfun = avg; character aggregate function for duckdb, for example avg, count or median, 
+#'        see https://duckdb.org/docs/sql/functions/aggregates, 
+#' @param decades vector of integers, the start year of each 10 year period, can overlap
+#' @param ensemble_list_string = NA; optional character string.  If NA, then it's ignored and all ensembles are included. 
+#'     if it's string that  is a list of ensembles to include in format "006,007,008"  only those with matching 
+#'     ensemble will be included.  
+#'     ensembles have leading zeros, are 3 digits and this must be a separated list with leading zeros
+#' @param crs default 'EPSG:4087', character valid coordinate reference system
+
+#' @return list of terra rasters of summary statistics, one per decade in decades vector
+#' @export
+summary_by_decades_raster <- function(mhwdb_conn, 
+                                      mhw_table = "arise10_decade_metrics", 
+                                      mhw_metric = 'int_mean', 
+                                      sql_function = 'avg', 
+                                      decades = c(2040, 2050, 2060),
+                                      ensemble_list_string = NA,
+                                      crs='EPSG:4087'){
+
+    # function used to apply to each decade
+    # note we have to use the terra::rast() on the list of data,
+    # which is different from a list of rasters.   
+    raster_for_decade<-function(start_of_decade) {
+    mhw_sql<- mhw_metric_summary_sql(mhw_table, 
+                         mhw_metric = mhw_metric,
+                         sql_function = sql_function, 
+                         start_year=start_of_decade, 
+                         end_year=start_of_decade + 9,
+                         ensemble_list_string = ensemble_list_string ,
+                                     #group_id_value = start_of_decade
+    )
+    mhw_summary <- DBI::dbGetQuery(conn=mhwdb_conn, mhw_sql)
+    mhw_raster <- terra::rast(mhw_summary,type="xyz", crs=crs)
+    return(mhw_raster)
+  }
+  
+  raster_list <- terra::rast(lapply(as.list(decades),raster_for_decade ))
+  raster_list <- terra::rotate(raster_list)  
+  names(raster_list)<- decades
+  return(raster_list)
+
+}
+
+
 
 
