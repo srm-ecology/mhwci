@@ -12,10 +12,11 @@ SELECT
   (mhw_onset- mod(mhw_onset,100000))/10000 as decade,
   avg(mhw_dur) as avg_dur
 FROM 
-  arise10_decade_metrics 
+  arise10_decade_metrics inner join 
 WHERE 
   mhw_onset/10000 >= 2040 and mhw_onset/10000 <= 2069+1
 GROUP BY 
   lat, lon, decade 
 ORDER by 
   decade, lat, lon
+LIMIT 20

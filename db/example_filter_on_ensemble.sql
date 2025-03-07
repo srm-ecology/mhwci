@@ -1,4 +1,4 @@
--- !preview conn=DBI::dbConnect(duckdb::duckdb(), dbdir = 'db/mhwci_v3.db')
+-- !preview conn=DBI::dbConnect(duckdb::duckdb(), dbdir = 'mhwci_v4.db')
 
 -- example of a method to filter on 'ensemble' for a scenario
 -- in this database the ensemble is stored as a character string with leading zeros:  001 002 010 

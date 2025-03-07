@@ -24,7 +24,8 @@ db <- mhw_connect(get_dbfile())
 # Plotting differences of other metrics
 
 Currently this package has functions that only compute summaries of duration, 
-which were created at beginning as we designed the workflow. 
+which 
+were created at beginning as we designed the workflow. 
 
 There is a generic function `mhw_metric_summary_sql()` 
 
@@ -58,6 +59,7 @@ arise_max_int_diff <- ssp245_raster - arise15_raster
 plot(arise_max_int_diff, main = "difference max of max intensity, \nSSP2 4.5 - ARISE 1.5, \n2040-2049")
 
 ```
+
 ### Example difference plot for 3 decades:
 
 Calculate the differences of the **max of max intensity** 
@@ -123,7 +125,8 @@ plot_rasters_squish_outliers(mhw_diffs)
 ```
 
 
-```{r}
 
+```{r}
+# cleanup connection 
 DBI::dbDisconnect(db)
 ```
