@@ -14,3 +14,6 @@ plots/*.pdf
 plots/*.tif
 .DS_Store
 .vscode
+# code style definition is personal 
+# lintr file sets how R and VS code flags code format
+.lintr
