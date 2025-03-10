@@ -22,6 +22,7 @@
 #   write_all_sql_files(scenarios, base_folder=BASE_FOLDER)
 
 BASE_FOLDER=Sys.getenv("MHW_METRICS_FOLDER", unset = '/mnt/research/plz-lab/DATA/ClimateData/MHW_metrics')
+message(paste("BASE_FOLDER set to ", BASE_FOLDER))
 
 scenarios<- list(
   c(name = 'ARISE-1.0', folder = 'ARISE-1.0', table='arise10_decade_metrics'),
@@ -30,6 +31,9 @@ scenarios<- list(
   c(name = 'SSP245', folder = 'SSP245/2040-2069', table='ssp245_decade_metrics'),
   c(name = 'SSP245-Present', folder = 'SSP245/Present', table='ssp245_present_decade_metrics')
 ) 
+
+message("scenarios: ")
+message(scenarios)
 
 
 #' get the ensemble ID from a CSV file name
