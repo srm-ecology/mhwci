@@ -145,7 +145,7 @@ additional_sql <- function(table) {
 #' and table of scenarios and paths
 #' will overwrite any file present
 write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER, sql_folder = 'db', db_file_name='mhwci.db'){
-  db_file_path <- file.path(base_folder, sql_folder, db_file_name)
+  db_file_path <- file.path(sql_folder, db_file_name)
   
   shell_script <- "# sql files to execute to create database \n"
   shell_script <- paste0(shell_script, "# created on ", Sys.Date(), "\n")
