@@ -21,6 +21,8 @@
 #     scenario = scenarios[[1]]
 #     write_sql_file(scenario, sql_folder = 'db')  # will print a file name
 # 4. write them all
+#    write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER, sql_folder = 'db', db_file_name='mhwci-test.db'){
+
 #   write_all_sql_files(scenarios, base_folder=BASE_FOLDER)
 
 
@@ -59,7 +61,7 @@ ensemble_from_filename <- function(filename){
 #' 
 #' with ensembleID and scenario name in the data rows
 select_statement <- function(ensemble_id, scenario_name, csv_file){
-  return(paste0("SELECT '", ensemble_id, "' AS ensemble, '", scenario_name, "' AS scenario, * FROM '", csv_file))
+  return(paste0("SELECT '", ensemble_id, "' AS ensemble, '", scenario_name, "' AS scenario, * FROM '", csv_file, "' "))
 }
 
 
