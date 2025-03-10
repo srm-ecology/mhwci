@@ -8,6 +8,8 @@
 # 
 # note this script has functions for all operations to allow for testing  of 
 # each part, and one file at a time. 
+# REQUIREMENTS: stringr package, a dependency of this package
+#  installing the mhwci package is not required to run this script, only stringr
 
 # usage:
 # 0. adjust the BASE_FOLDER and scenarios table with current file paths in this file
@@ -17,12 +19,15 @@
 #     sql <- create_scenario_table_sql(scenario_name = scenario[['name']], path = file.path(BASE_FOLDER,scenario[['folder']]), table_name = scenario[['table']])
 # 3. test write a file
 #     scenario = scenarios[[1]]
-#     write_sql_file(scenario)  # will print a file name
+#     write_sql_file(scenario, sql_folder = 'db')  # will print a file name
 # 4. write them all
 #   write_all_sql_files(scenarios, base_folder=BASE_FOLDER)
 
+
 BASE_FOLDER=Sys.getenv("MHW_METRICS_FOLDER", unset = '/mnt/research/plz-lab/DATA/ClimateData/MHW_metrics')
+
 message(paste("BASE_FOLDER set to ", BASE_FOLDER))
+if(!dir.exists(BASE_FOLDER)){ message("BASE_FOLDER not found on path, set in MHW_METRICS_FOLDER in .Renviron")}
 
 scenarios<- list(
   c(name = 'ARISE-1.0', folder = 'ARISE-1.0', table='arise10_decade_metrics'),
@@ -89,7 +94,7 @@ create_scenario_table_sql <- function(scenario_name, path, table_name){
 }
 
 
-write_sql_file<- function(scenario, base_folder = BASE_FOLDER, sql_folder = "../db") {
+write_sql_file<- function(scenario, base_folder = BASE_FOLDER, sql_folder = "db") {
     sql_file = file.path(sql_folder, paste0("create_", scenario[['name']], '.sql'))
     sql = create_scenario_table_sql(scenario_name = scenario[['name']], 
                                     path = file.path(base_folder,scenario[['folder']]), 
@@ -101,18 +106,6 @@ write_sql_file<- function(scenario, base_folder = BASE_FOLDER, sql_folder = "../
 
 }
   
-
-#' write a file of sql commands for each scenario
-#' 
-#' create files of SQL commands based on files present
-#' and table of scenarios and paths
-#' will overwrite any file present
-write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER){
-  for (scenario in scenarios){
-    sql_file <- write_sql_file(scenario)
-    print(sql_file)
-  }
-}
 
 #' sql statements to complete table
 #' 
@@ -142,4 +135,31 @@ additional_sql <- function(table) {
   sql <- paste0(sql, "create index ", table, "_end_date_idx on  arise10_decade_metrics (mhw_end_date);","\n\n") 
   sql <- paste0(sql, "create index ", table, "_lat_lon_idx on  arise10_decade_metrics (lat, lon);","\n\n") 
   return(sql)
+}
+
+#' write a file of sql commands for each scenario
+#' 
+#' create files of SQL commands based on files present
+#' and table of scenarios and paths
+#' will overwrite any file present
+write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER, sql_folder = 'db', db_file_name='mhwci.db'){
+  db_file_path <- file.path(base_folder, sql_folder, db_file_name)
+  
+  shell_script <- "# sql files to execute to create database \n"
+  shell_script <- paste0(shell_script, "# created on ", Sys.Date(), "\n")
+  
+  shell_script <- paste0(shell_script, "export DBFILE=", db_file_path, "\n")
+  # note for now, assuming the script build_mhw_db.sql exists
+  shell_script <- paste0(shell_script, "duckdb $DBFILE < build_mhw_db.sql \n\n")
+  
+  for (scenario in scenarios){
+    sql_file <- write_sql_file(scenario)
+    print(sql_file)
+    shell_script <- paste0(shell_script, "duckdb $DBFILE < ", sql_file, " \n\n")
+
+  }
+  
+  shell_script_file = paste0("create_", db_file_name, "_", Sys.Date(), ".sh")
+  message(paste("writing shell script file ", shell_script_file))
+  cat(shell_script, file = shell_script_file)
 }
