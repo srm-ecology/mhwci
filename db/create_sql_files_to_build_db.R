@@ -97,7 +97,7 @@ create_scenario_table_sql <- function(scenario_name, path, table_name){
 
 
 write_sql_file<- function(scenario, base_folder = BASE_FOLDER, sql_folder = "db") {
-    sql_file = file.path(sql_folder, paste0("create_", scenario[['name']], '.sql'))
+    sql_file = file.path(sql_folder, paste0("build_", scenario[['table']], '.sql'))
     sql = create_scenario_table_sql(scenario_name = scenario[['name']], 
                                     path = file.path(base_folder,scenario[['folder']]), 
                                     table_name = scenario[['table']]
