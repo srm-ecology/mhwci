@@ -153,7 +153,7 @@ write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER, sql_folder =
   shell_script <- paste0(shell_script, "duckdb $DBFILE < build_mhw_db.sql \n\n")
   
   for (scenario in scenarios){
-    sql_file <- write_sql_file(scenario)
+    sql_file <- write_sql_file(scenario, sql_folder = sql_folder)
     print(sql_file)
     shell_script <- paste0(shell_script, "duckdb $DBFILE < ", sql_file, " \n\n")
 
