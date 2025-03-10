@@ -151,6 +151,9 @@ write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER, sql_folder =
   shell_script <- paste0(shell_script, "# created on ", Sys.Date(), "\n")
   
   shell_script <- paste0(shell_script, "export DBFILE=", db_file_path, "\n")
+  shell_script <- paste0(shell_script, "cd ", base_folder, "\n")
+  
+  
   # note for now, assuming the script build_mhw_db.sql exists
   shell_script <- paste0(shell_script, "duckdb $DBFILE < build_mhw_db.sql \n\n")
   
