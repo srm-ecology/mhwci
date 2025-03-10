@@ -14,14 +14,14 @@
 # 1. source this file
 # 2. test sql code - are the CSV files in the correct path?     
 #     scenario = scenarios[[1]]
-#     sql = create_scenario_table_sql(scenario_name = scenario[['name']], path = file.path(base_folder,scenario[['folder']]), table_name = scenario[['']]
+#     sql <- create_scenario_table_sql(scenario_name = scenario[['name']], path = file.path(BASE_FOLDER,scenario[['folder']]), table_name = scenario[['table']])
 # 3. test write a file
 #     scenario = scenarios[[1]]
 #     write_sql_file(scenario)  # will print a file name
 # 4. write them all
 #   write_all_sql_files(scenarios, base_folder=BASE_FOLDER)
 
-BASE_FOLDER=Sys.getenv(MHW_METRICS_FOLDER, unset = '/mnt/research/plz-lab/DATA/ClimateData/MHW_metrics')
+BASE_FOLDER=Sys.getenv("MHW_METRICS_FOLDER", unset = '/mnt/research/plz-lab/DATA/ClimateData/MHW_metrics')
 
 scenarios<- list(
   c(name = 'ARISE-1.0', folder = 'ARISE-1.0', table='arise10_decade_metrics'),
@@ -49,8 +49,8 @@ ensemble_from_filename <- function(filename){
 #' SQL to import data from a CSV File
 #' 
 #' with ensembleID and scenario name in the data rows
-select_statment = function(ensemble_id, scencario_name, csv_file){
-  return(paste("SELECT *, '", ensemble_id, "' AS ensemble, '", scenario_name, "' AS scenario FROM '", csv_file))
+select_statement <- function(ensemble_id, scenario_name, csv_file){
+  return(paste0("SELECT '", ensemble_id, "' AS ensemble, '", scenario_name, "' AS scenario, * FROM '", csv_file))
 }
 
 
@@ -58,40 +58,41 @@ select_statment = function(ensemble_id, scencario_name, csv_file){
 #' and using UNION to join them together.   
 #' e.g. `create table S as select * from file1.csv union select * from file2.csv` etc
 #' 
-create_scenario_table_sql < - function(scenario_name, path, table_name){
+create_scenario_table_sql <- function(scenario_name, path, table_name){
 
-  scenario_csv_files = list.files(
-                path = path , 
-                pattern = '.*\.csv')
+  scenario_csv_files = list.files(path = path, pattern = '.*\\.csv')
 
   # start with a create table statement, follow with select statements  
-  sql = paste("create table ", scenario_name, " as \n")
-  
+  sql = paste("create table ", table_name, " as \n")
   num_files = length(scenario_csv_files)
   for(i in (1:num_files)) {
-    sql = sql + select_statement(ensemble_id = ensemble_from_filename(scenario_csv_files[[i]]), 
+    
+    sql <- paste0(sql, select_statement(ensemble_id = ensemble_from_filename(scenario_csv_files[[i]]), 
                                  scenario_name = scenario_name, 
                                  csv_file = scenario_csv_files[[i]]
                                  )
+    )
     if (i != num_files){ 
-      sql = sql + " UNION \n" 
+      sql <- paste0(sql, " UNION \n")
     } else { 
-      sql = sql + ";"
+      sql <- paste0(sql, ";")
     }
   }
+  
+  sql <-  paste(sql, "\n\n", additional_sql(table = table_name))
   
   return(sql)  
 }
 
 
-write_sql_file<- function(scenario) {
-    sql_file = paste0("create_", scenario[['name']], '.sql')
+write_sql_file<- function(scenario, base_folder = BASE_FOLDER, sql_folder = "../db") {
+    sql_file = file.path(sql_folder, paste0("create_", scenario[['name']], '.sql'))
     sql = create_scenario_table_sql(scenario_name = scenario[['name']], 
                                     path = file.path(base_folder,scenario[['folder']]), 
-                                    table_name = scenario[['']]
+                                    table_name = scenario[['table']]
     )
     
-    cat(sql, sql_file)
+    cat(sql, file=sql_file)
     return(sql_file)
 
 }
@@ -109,3 +110,32 @@ write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER){
   }
 }
 
+#' sql statements to complete table
+#' 
+#' these sql statements for each MHW metrics table are needed
+#' to help them work with R and to work faster
+#' This is a short cut to have to paste this at the end of each SQL file, 
+#' which used to be done manually
+#' For these to run, requires the table to be in the database, with the standard
+#' MHW fields, and the table lat_index and lon_index must exist
+#' these are created with the file `db/build_mhw_db.sql`
+#' 
+additional_sql <- function(table) {
+  sql <- ''
+  # ", table, "
+  sql <- paste0(sql, "alter table  ", table, " add column mhw_onset_date DATE;","\n\n") 
+  sql <- paste0(sql, "alter table  ", table, " add column mhw_end_date DATE;","\n\n") 
+  sql <- paste0(sql, "update  ", table, " set mhw_onset_date = cast(strptime(cast(mhw_onset as varchar), '%Y%m%d') as date) , 
+  mhw_end_date = cast(strptime(cast(mhw_end as varchar), '%Y%m%d') as date);","\n\n") 
+  
+  sql <- paste0(sql, "alter table ", table, " add column lat DOUBLE;","\n\n") 
+  sql <- paste0(sql,  "alter table ", table, " add column lon DOUBLE;","\n\n") 
+  
+  sql <- paste0(sql, "update ", table, " set lat = lat_index.lat from lat_index where  arise10_decade_metrics.yloc = lat_index.yloc ;","\n\n") 
+  sql <- paste0(sql, "update", table, " set lon = lon_index.lon from lon_index where  arise10_decade_metrics.xloc = lon_index.xloc ;","\n\n") 
+  
+  sql <- paste0(sql, "create index ", table, "_onset_date_idx on ", table, " (mhw_onset_date);","\n\n") 
+  sql <- paste0(sql, "create index ", table, "_end_date_idx on  arise10_decade_metrics (mhw_end_date);","\n\n") 
+  sql <- paste0(sql, "create index ", table, "_lat_lon_idx on  arise10_decade_metrics (lat, lon);","\n\n") 
+  return(sql)
+}
