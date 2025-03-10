@@ -131,7 +131,7 @@ additional_sql <- function(table) {
   sql <- paste0(sql,  "alter table ", table, " add column lon DOUBLE;","\n\n") 
   
   sql <- paste0(sql, "update ", table, " set lat = lat_index.lat from lat_index where  arise10_decade_metrics.yloc = lat_index.yloc ;","\n\n") 
-  sql <- paste0(sql, "update", table, " set lon = lon_index.lon from lon_index where  arise10_decade_metrics.xloc = lon_index.xloc ;","\n\n") 
+  sql <- paste0(sql, "update ", table, " set lon = lon_index.lon from lon_index where  arise10_decade_metrics.xloc = lon_index.xloc ;","\n\n") 
   
   sql <- paste0(sql, "create index ", table, "_onset_date_idx on ", table, " (mhw_onset_date);","\n\n") 
   sql <- paste0(sql, "create index ", table, "_end_date_idx on  arise10_decade_metrics (mhw_end_date);","\n\n") 
