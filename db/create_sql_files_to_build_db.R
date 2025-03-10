@@ -69,7 +69,7 @@ select_statement <- function(ensemble_id, scenario_name, csv_file){
 #' 
 create_scenario_table_sql <- function(scenario_name, path, table_name){
 
-  scenario_csv_files = list.files(path = path, pattern = '.*\\.csv')
+  scenario_csv_files = list.files(path = path, pattern = '.*\\.csv', full.names = TRUE)
 
   # start with a create table statement, follow with select statements  
   sql = paste("create table ", table_name, " as \n")
