@@ -130,12 +130,12 @@ additional_sql <- function(table) {
   sql <- paste0(sql, "alter table ", table, " add column lat DOUBLE;","\n\n") 
   sql <- paste0(sql,  "alter table ", table, " add column lon DOUBLE;","\n\n") 
   
-  sql <- paste0(sql, "update ", table, " set lat = lat_index.lat from lat_index where  arise10_decade_metrics.yloc = lat_index.yloc ;","\n\n") 
-  sql <- paste0(sql, "update ", table, " set lon = lon_index.lon from lon_index where  arise10_decade_metrics.xloc = lon_index.xloc ;","\n\n") 
+  sql <- paste0(sql, "update ", table, " set lat = lat_index.lat from lat_index where ", table, ".yloc = lat_index.yloc ;","\n\n") 
+  sql <- paste0(sql, "update ", table, " set lon = lon_index.lon from lon_index where  ", table, ".xloc = lon_index.xloc ;","\n\n") 
   
   sql <- paste0(sql, "create index ", table, "_onset_date_idx on ", table, " (mhw_onset_date);","\n\n") 
-  sql <- paste0(sql, "create index ", table, "_end_date_idx on  arise10_decade_metrics (mhw_end_date);","\n\n") 
-  sql <- paste0(sql, "create index ", table, "_lat_lon_idx on  arise10_decade_metrics (lat, lon);","\n\n") 
+  sql <- paste0(sql, "create index ", table, "_end_date_idx  on  ", table, " (mhw_end_date);","\n\n") 
+  sql <- paste0(sql, "create index ", table, "_lat_lon_idx   on  ", table, " (lat, lon);","\n\n") 
   return(sql)
 }
 
@@ -155,7 +155,7 @@ write_all_sql_files <- function(scenarios, base_folder=BASE_FOLDER, sql_folder =
   
   
   # note for now, assuming the script build_mhw_db.sql exists
-  shell_script <- paste0(shell_script, "duckdb $DBFILE < build_mhw_db.sql \n\n")
+  shell_script <- paste0(shell_script, "duckdb $DBFILE < ", sql_folder, "/build_mhw_db.sql \n\n")
   
   for (scenario in scenarios){
     sql_file <- write_sql_file(scenario, sql_folder = sql_folder)
