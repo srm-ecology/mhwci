@@ -9,3 +9,5 @@
 ^db$
 ^notebooks$
 ^plots$
+^doc$
+^Meta$
