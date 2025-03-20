@@ -72,12 +72,54 @@ The database has a table for each scenario, listed above, and a few other suppor
 mhwci::table_head(db,"ssp245_decade_metrics")
 
 ```
+
+## Using SQL
+
+There are functions for creating SQL that calculates summaries from tables.  The 
+SQL is not complex but the function helps to wrap the functionality for easy of use. 
+
+The functions to generate the SQL command and then execute the SQL are separated
+so you can see and modify the SQL if needed. 
+
+The following will generate sql to calculate average of the 'mhw_cur' column or 
+the duration of the heat wave for 2 decades  
+
+Note the name of the column and the function to run
+must be quoted, unlike many of the tidy functions where data frame columns do not get quoted.  
+
+```{r}
+mhw_table <-"ssp245_decade_metrics"
+example_sql <- mhw_metric_summary_sql(mhw_table, 
+                       mhw_metric = 'mhw_dur', 
+                       sql_function = 'avg', 
+                       start_year=2040, 
+                       end_year=2069,)
+example_sql
+
+```
+
+It's also possible to include only some ensembles using the `ensemble_list_string`
+parameter.  See the help page for this function ( `?mhw_metric_summary_sql`) when the 
+package is installed. 
+
+**get some data from sql**
+
+And to execute the sql against the current database you send this string of sql
+to the current connection (saved in the variable 'db' in this notebook)
+
+```{r}
+summary.dataframe<- DBI::dbGetQuery(conn=db, example_sql)
+head(summary.dataframe)
+```
+
+
+
 ## Calculating Metrics
 
 Set the scenario table to use for this plot. 
 
 ```{r, echo=TRUE}
-mhw_table <-"arise10_decade_metrics"
+mhw_table <-"ssp245_decade_metrics"
 ```
 
 This function queries this table for average durations by point and decade into data frames with x, y and value, and then uses the `terra` package to create the rasters of those decades in a list.  It also rotates the world plots so that the center is along the prime meridian instead of the dateline. 
