@@ -3,7 +3,10 @@ test_that("multiplication works", {
 })
 
 test_that("partioning works", {
-  decade_partitions = create_partion_table(partition_size_years = 10, start_year = 2040, end_year = 2069)
-  expect_equal(c(2040, 2050, 2060), decade_partitions$partition)
-  
+  start_year= 2040
+  decade_partitions = create_partition_df(partition_size_years=3, start_year = start_year, end_year = 2069)
+  expect_equal(10, nrow(decade_partitions))
+  expect_equal(start_year, decade_partitions$partition_start[1])
+  expect_equal(as.character(tail(decade_partitions$partition_end_date,1)[1]), "2069-12-31")
+
 })
