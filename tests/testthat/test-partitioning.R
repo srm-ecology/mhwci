@@ -1,6 +1,5 @@
-test_that("multiplication works", {
-  expect_equal(2 * 2, 4)
-})
+#' MHWCI testing
+#' 
 
 test_that("partioning works", {
   start_year= 2040
